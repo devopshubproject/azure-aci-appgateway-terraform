@@ -4,14 +4,15 @@ environment = "dev"
 
 # Network
 
-vnet_name    = ""
-vnet_rg_name = ""
-subnet_name  = ""
-ipconf_name  = ""
+vnet_name       = "aci-vnet"
+vnet_rg_name    = "aci-vnet-rg"
+pvt_subnet_name = ""
+pub_subnet_name = ""
+ipconf_name     = ""
 
 # App Gateway
 
-tier = "Standard_v"
+tier = "Standard_v2"
 sku  = "Standard_v2"
 
 # ACI details
@@ -22,3 +23,4 @@ image_name      = "microsoft/aci-helloworld:latest"
 cpu_core_number = 0.5
 memory_size     = 1.5
 port_number     = 80
+dns_name_label  = "acipvt"

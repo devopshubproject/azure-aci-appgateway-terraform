@@ -45,11 +45,21 @@ data "azurerm_virtual_network" "vnet" {
 }
 
 ##################################################
-# Azure Subnet
+# Azure Public Subnet
 ##################################################
 
-data "azurerm_subnet" "subnet" {
-  name                 = "${var.subnet_name}"
+data "azurerm_subnet" "pub_subnet" {
+  name                 = var.pub_subnet_name
+  virtual_network_name = data.azurerm_virtual_network.vnet.name
+  resource_group_name  = data.azurerm_virtual_network.vnet.resource_group_name
+}
+
+##################################################
+# Azure Private Subnet
+##################################################
+
+data "azurerm_subnet" "pvt_subnet" {
+  name                 = var.pvt_subnet_name
   virtual_network_name = data.azurerm_virtual_network.vnet.name
   resource_group_name  = data.azurerm_virtual_network.vnet.resource_group_name
 }
@@ -68,7 +78,7 @@ resource "azurerm_network_profile" "netprofile" {
 
     ip_configuration {
       name      = var.ipconf_name
-      subnet_id = azurerm_subnet.subnet.id
+      subnet_id = azurerm_subnet.pvt_subnet.id
     }
   }
 }
@@ -117,14 +127,14 @@ resource "azurerm_application_gateway" "appgw" {
   location            = azurerm_resource_group.rg.location
 
   sku {
-    name     = "Standard_Small"
-    tier     = "Standard"
+    name     = var.sku
+    tier     = var.tier
     capacity = 1
   }
 
   gateway_ip_configuration {
     name      = local.gateway-ip-configuration
-    subnet_id = azurerm_subnet.subnet.id
+    subnet_id = azurerm_subnet.pub_subnet.id
   }
 
   frontend_port {
@@ -133,8 +143,9 @@ resource "azurerm_application_gateway" "appgw" {
   }
 
   frontend_ip_configuration {
-    name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.pip.id
+    name                          = local.frontend_ip_configuration_name
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip.id
   }
 
   backend_address_pool {
@@ -144,10 +155,10 @@ resource "azurerm_application_gateway" "appgw" {
   backend_http_settings {
     name                  = local.http_setting_name
     cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
-    port                  = 80
-    protocol              = "Http"
-    request_timeout       = 60
+    #path                  = "/path1/"
+    port            = 80
+    protocol        = "Http"
+    request_timeout = 60
   }
 
   http_listener {

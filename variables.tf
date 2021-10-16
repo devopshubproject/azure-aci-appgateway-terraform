@@ -18,7 +18,7 @@ variable "cost_center" {
 variable "app_name" {
   type        = "string"
   description = "Application name of project"
-  default     = "rd"
+  default     = "acipvt"
 }
 variable "location" {
   type        = "string"
@@ -35,7 +35,11 @@ variable "vnet_rg_name" {
   type        = "string"
   description = "The core network vnet resource group name"
 }
-variable "subnet_name" {
+variable "pvt_subnet_name" {
+  type        = "string"
+  description = "The cluster network subnet resource name"
+}
+variable "pub_subnet_name" {
   type        = "string"
   description = "The cluster network subnet resource name"
 }
@@ -46,43 +50,6 @@ variable "ipconf_name" {
 }
 
 ### Host Pool ###
-variable "host_pool_type" {
-  type    = string
-  default = "Pooled"
-}
-
-variable "host_pool_load_balancer_type" {
-  type    = string
-  default = "BreadthFirst"
-}
-
-variable "host_pool_validate_environment" {
-  type    = bool
-  default = false
-}
-
-variable "host_pool_max_sessions_allowed" {
-  type    = number
-  default = 999999
-}
-
-### Desktop App group ###
-variable "desktop_app_group_type" {
-  type    = string
-  default = "Desktop"
-}
-
-### Share Image Gallery ###
-
-variable "tier" {
-  type        = string
-  description = "The Offer Name for the Image"
-}
-
-variable "sku" {
-  type        = string
-  description = "The Name of the SKU for the Image."
-}
 
 ### ACI Details ###
 
@@ -115,4 +82,8 @@ variable "memory_size" {
 
 variable "port_number" {
   description = "A public port for the container"
+}
+
+variable "dns_name_label" {
+  description = "DNS label name to get added to aci"
 }
